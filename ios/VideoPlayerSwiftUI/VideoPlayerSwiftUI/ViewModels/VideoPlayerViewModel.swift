@@ -11,6 +11,7 @@ import AVKit
  
  */
 
+@MainActor
 class VideoPlayerViewModel: ObservableObject {
     
     @Published var player: AVPlayer?
@@ -29,14 +30,17 @@ class VideoPlayerViewModel: ObservableObject {
     func fetchData() {
         Task {
             do {
-                let (data, response) = try await URLSession.shared.data(from: videosURL)
+                let (data, _) = try await URLSession.shared.data(from: videosURL)
                 videos = try JSONDecoder().decode([VideoModel].self, from: data)
-                
-                print("We have videos!")
-                
-                for V in videos {
-                    print("VIDEO: \(V.hlsURL)")
+                currentVideoIndex = 0
+                guard let streamingURL = URL(string:videos[currentVideoIndex].hlsURL) else {
+                    errorMessage = "Malformed url for video"
+                    showErrorAlert = true
+                    player = nil
+                    return
                 }
+                player = AVPlayer(url: streamingURL)
+
             } catch {
                 videos = []
                 errorMessage = "Failed to download videos"
@@ -44,6 +48,14 @@ class VideoPlayerViewModel: ObservableObject {
                 print("Error fetching data: \(error.localizedDescription)")
             }
         }
+    }
+    
+    func getCurrentVideoModel() -> VideoModel? {
+        guard currentVideoIndex < videos.count else {
+            print("current index out of range")
+            return nil
+        }
+        return videos[currentVideoIndex]
     }
     
     func isVideoPlaying() -> Bool {

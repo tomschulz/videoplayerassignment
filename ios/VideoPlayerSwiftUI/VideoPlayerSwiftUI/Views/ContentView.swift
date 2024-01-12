@@ -1,12 +1,6 @@
-//
-//  ContentView.swift
-//  VideoPlayerSwiftUI
-//
-//  Created by Michael Gauthier on 2021-01-06.
-//
-
+//  ContentView.swift Created by Tom Schulz Created by Michael Gauthier on 2021-01-06.
 import SwiftUI
-
+import AVKit
 struct ContentView: View {
     
     @EnvironmentObject var videoPlayerViewModel: VideoPlayerViewModel
@@ -16,7 +10,7 @@ struct ContentView: View {
     let aspect16to9 = 9.0 / 16.0
     
     var body: some View {
-        VStack {
+        VStack(spacing:0) {
             Text("TITLE")
                 .fontWeight(.bold)
                 .frame(width: screenWidth, height: titleHeight)
@@ -24,9 +18,14 @@ struct ContentView: View {
                 .background(Color.black)
                 
             Group {
-                Text("Player Goes Here")
+                if let player = videoPlayerViewModel.player {
+                    VideoPlayer(player: player)
+                } else {
+                    EmptyView()
+                }
             }
             .frame(width: screenWidth, height: screenWidth * aspect16to9)
+            .border(Color.red)
             
             Divider()
             
