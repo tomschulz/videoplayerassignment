@@ -9,9 +9,13 @@ import SwiftUI
 
 @main
 struct VideoPlayerSwiftUIApp: App {
+    
+    @StateObject var videoPlayerViewModel = VideoPlayerViewModel()
+    
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .environmentObject(videoPlayerViewModel)
         }
     }
 }
