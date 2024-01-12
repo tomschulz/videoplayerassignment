@@ -36,6 +36,9 @@ struct ContentView: View {
             .frame(width: screenWidth)
             .frame(maxHeight: .infinity)
         }
+        .onAppear {
+            videoPlayerViewModel.fetchData()
+        }
     }
 }
 

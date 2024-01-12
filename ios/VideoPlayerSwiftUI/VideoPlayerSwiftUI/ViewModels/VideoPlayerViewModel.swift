@@ -15,6 +15,7 @@ class VideoPlayerViewModel: ObservableObject {
     
     @Published var player: AVPlayer?
     @Published var showErrorAlert: Bool = false
+    @Published var errorMessage: String = ""
     
     private var videos = [VideoModel]()
     private var currentVideoIndex = 0
@@ -26,9 +27,23 @@ class VideoPlayerViewModel: ObservableObject {
     }
     
     func fetchData() {
-        // get the data from the server using an async Task
-        
-        // once we have data, initialize the video player
+        Task {
+            do {
+                let (data, response) = try await URLSession.shared.data(from: videosURL)
+                videos = try JSONDecoder().decode([VideoModel].self, from: data)
+                
+                print("We have videos!")
+                
+                for V in videos {
+                    print("VIDEO: \(V.hlsURL)")
+                }
+            } catch {
+                videos = []
+                errorMessage = "Failed to download videos"
+                showErrorAlert = true
+                print("Error fetching data: \(error.localizedDescription)")
+            }
+        }
     }
     
     func isVideoPlaying() -> Bool {

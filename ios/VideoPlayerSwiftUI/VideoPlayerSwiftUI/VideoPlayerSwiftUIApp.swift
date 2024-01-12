@@ -17,5 +17,6 @@ struct VideoPlayerSwiftUIApp: App {
             ContentView()
                 .environmentObject(videoPlayerViewModel)
         }
+        
     }
 }
