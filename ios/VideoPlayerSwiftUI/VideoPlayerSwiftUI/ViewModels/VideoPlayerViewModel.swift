@@ -37,6 +37,7 @@ class VideoPlayerViewModel: ObservableObject {
             do {
                 let (data, _) = try await URLSession.shared.data(from: videosURL)
                 videos = try JSONDecoder().decode([VideoModel].self, from: data)
+                videos.sort { $0.publishedAt < $1.publishedAt }
                 currentVideoIndex = 0
                 createPlayer()
                 updateNextPreviousButtonStates()
