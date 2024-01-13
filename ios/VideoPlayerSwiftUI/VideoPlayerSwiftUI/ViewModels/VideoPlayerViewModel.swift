@@ -20,7 +20,6 @@ class VideoPlayerViewModel: ObservableObject {
     
     @Published var isNextButtonDisabled: Bool = true
     @Published var isPreviousButtonDisabled: Bool = true
-    @Published var shouldShowPauseButton: Bool = false
     
     @Published var shouldHideOver = false
     
@@ -86,10 +85,8 @@ class VideoPlayerViewModel: ObservableObject {
         }
         if isVideoPlaying() {
             videoPlayer.pause()
-            shouldShowPauseButton = true
         } else {
             videoPlayer.play()
-            shouldShowPauseButton = false
         }
     }
 

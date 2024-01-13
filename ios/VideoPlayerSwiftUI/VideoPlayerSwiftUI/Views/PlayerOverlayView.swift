@@ -23,7 +23,7 @@ struct PlayerOverlayView: View {
             Button {
                 videoPlayerViewModel.togglePlayPause()
             } label: {
-                if videoPlayerViewModel.shouldShowPauseButton {
+                if videoPlayerViewModel.isVideoPlaying() {
                     Image("pause")
                 } else {
                     Image("play")
