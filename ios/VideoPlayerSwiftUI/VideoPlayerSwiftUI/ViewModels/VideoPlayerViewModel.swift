@@ -18,6 +18,12 @@ class VideoPlayerViewModel: ObservableObject {
     @Published var showErrorAlert: Bool = false
     @Published var errorMessage: String = ""
     
+    @Published var isNextButtonDisabled: Bool = true
+    @Published var isPreviousButtonDisabled: Bool = true
+    @Published var shouldShowPauseButton: Bool = false
+    
+    @Published var shouldHideOver = false
+    
     private var videos = [VideoModel]()
     private var currentVideoIndex = 0
     
@@ -33,14 +39,8 @@ class VideoPlayerViewModel: ObservableObject {
                 let (data, _) = try await URLSession.shared.data(from: videosURL)
                 videos = try JSONDecoder().decode([VideoModel].self, from: data)
                 currentVideoIndex = 0
-                guard let streamingURL = URL(string:videos[currentVideoIndex].hlsURL) else {
-                    errorMessage = "Malformed url for video"
-                    showErrorAlert = true
-                    player = nil
-                    return
-                }
-                player = AVPlayer(url: streamingURL)
-
+                createPlayer()
+                updateNextPreviousButtonStates()
             } catch {
                 videos = []
                 errorMessage = "Failed to download videos"
@@ -48,6 +48,21 @@ class VideoPlayerViewModel: ObservableObject {
                 print("Error fetching data: \(error.localizedDescription)")
             }
         }
+    }
+    
+    func createPlayer() {
+        guard let streamingURL = URL(string:videos[currentVideoIndex].hlsURL) else {
+            showBadVideoURLError()
+            return
+        }
+        player = AVPlayer(url: streamingURL)
+    }
+    
+    // sets up the alert if we have a bad URL in the data
+    func showBadVideoURLError() {
+        errorMessage = "Malformed url for video"
+        showErrorAlert = true
+        player = nil
     }
     
     func getCurrentVideoModel() -> VideoModel? {
@@ -59,26 +74,63 @@ class VideoPlayerViewModel: ObservableObject {
     }
     
     func isVideoPlaying() -> Bool {
-        return false
+        guard let videoPlayer = player else {
+            return false
+        }
+        return videoPlayer.timeControlStatus == .playing
     }
     
     func togglePlayPause() {
-        // if the video is playing pause it. If it is paused, play it.
+        guard let videoPlayer = player else {
+            return
+        }
+        if isVideoPlaying() {
+            videoPlayer.pause()
+            shouldShowPauseButton = true
+        } else {
+            videoPlayer.play()
+            shouldShowPauseButton = false
+        }
     }
-    
-    func isNextButtonDisabled() -> Bool {
-        return currentVideoIndex == videos.count - 1
-    }
-    
+
     func playNextVideo() {
-        // update the url for the video player
+        guard currentVideoIndex < (videos.count - 1) else {
+            return
+        }
+        guard let streamURL =  URL(string: videos[currentVideoIndex+1].hlsURL) else {
+            showBadVideoURLError()
+            return
+        }
+        currentVideoIndex = currentVideoIndex + 1
+        updateNextPreviousButtonStates()
+        player?.replaceCurrentItem(with: AVPlayerItem(url: streamURL))
     }
-    
-    func isPreviousButtonDisabled() {
-        return currentVideoIndex = 0
-    }
-    
+        
     func playPreviousVideo() {
-        // update the url for the video player
+        guard currentVideoIndex > 0 else {
+            return
+        }
+        guard let streamURL =  URL(string: videos[currentVideoIndex-1].hlsURL) else {
+            showBadVideoURLError()
+            return
+        }
+        currentVideoIndex = currentVideoIndex - 1
+        updateNextPreviousButtonStates()
+        player?.replaceCurrentItem(with: AVPlayerItem(url: streamURL))
     }
+    
+    func updateNextPreviousButtonStates() {
+        if currentVideoIndex == 0 {
+            isPreviousButtonDisabled = true
+        } else {
+            isPreviousButtonDisabled = false
+        }
+        
+        if currentVideoIndex < (videos.count - 1){
+            isNextButtonDisabled = false
+        } else {
+            isNextButtonDisabled = true
+        }
+    }
+    
 }

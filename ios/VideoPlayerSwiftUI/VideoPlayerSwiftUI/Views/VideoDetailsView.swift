@@ -1,10 +1,4 @@
-//
-//  VideoDetailsView.swift
-//  VideoPlayerSwiftUI
-//
-//  Created by Tom on 2024-01-12.
-//
-
+//  VideoDetailsView.swift Created by Tom on 2024-01-12.
 import SwiftUI
 
 struct VideoDetailsView: View {
@@ -20,7 +14,12 @@ struct VideoDetailsView: View {
                         .font(.title)
                     Text(currentVideo.author.name)
                         .font(.subheadline)
-                    Text(currentVideo.description)
+
+                    if let attributedString = try? AttributedString(markdown: currentVideo.description) {
+                        Text(attributedString)
+                    } else {
+                        Text(currentVideo.description)
+                    }
                 }
             }
         } else {

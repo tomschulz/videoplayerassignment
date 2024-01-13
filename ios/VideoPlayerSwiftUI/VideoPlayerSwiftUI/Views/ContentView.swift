@@ -5,13 +5,15 @@ struct ContentView: View {
     
     @EnvironmentObject var videoPlayerViewModel: VideoPlayerViewModel
     
+    @State var shouldShowPlayerOverlayView = true
+    
     let screenWidth = UIScreen.main.bounds.width
     let titleHeight = 64.0
     let aspect16to9 = 9.0 / 16.0
     
     var body: some View {
         VStack(spacing:0) {
-            Text("TITLE")
+            Text("Video Player")
                 .fontWeight(.bold)
                 .frame(width: screenWidth, height: titleHeight)
                 .foregroundColor(.white)
@@ -19,13 +21,19 @@ struct ContentView: View {
                 
             Group {
                 if let player = videoPlayerViewModel.player {
-                    VideoPlayer(player: player)
+                    VideoPlayer(player: player) {
+                        if shouldShowPlayerOverlayView {
+                            PlayerOverlayView()
+                        } else {
+                            EmptyView()
+                        }
+                    }
                 } else {
                     EmptyView()
                 }
             }
             .frame(width: screenWidth, height: screenWidth * aspect16to9)
-            .border(Color.red)
+            .gesture( TapGesture().onEnded { _ in shouldShowPlayerOverlayView.toggle() })
             
             Divider()
             

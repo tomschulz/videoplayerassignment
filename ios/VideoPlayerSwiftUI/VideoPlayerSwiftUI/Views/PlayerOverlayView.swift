@@ -5,29 +5,44 @@ import SwiftUI
 struct PlayerOverlayView: View {
     
     @EnvironmentObject var videoPlayerViewModel: VideoPlayerViewModel
-
+    
     var body: some View {
         HStack(spacing:10) {
-            Button("BACK") {
-                print("back")
+            Button {
+                videoPlayerViewModel.playPreviousVideo()
+            } label: {
+                Image("previous")
             }
             .padding()
-            .foregroundColor(Color(.white))
-            .background(Color.blue)
+            .background(Color.white)
+            .clipShape(Circle())
+            .disabled(videoPlayerViewModel.isPreviousButtonDisabled)
+            .opacity(videoPlayerViewModel.isPreviousButtonDisabled ? 0.2 : 1.0)
             
-            Button("PLAY/PAUSE") {
-                print("playpause")
-            }
-            .padding()
-            .foregroundColor(Color(.white))
-            .background(Color.blue)
             
-            Button("NEXT") {
-                print("next")
+            Button {
+                videoPlayerViewModel.togglePlayPause()
+            } label: {
+                if videoPlayerViewModel.shouldShowPauseButton {
+                    Image("pause")
+                } else {
+                    Image("play")
+                }
             }
             .padding()
-            .foregroundColor(Color(.white))
-            .background(Color.blue)
+            .background(Color.white)
+            .clipShape(Circle())
+            
+            Button {
+                videoPlayerViewModel.playNextVideo()
+            }label: {
+                Image("next")
+            }
+            .padding()
+            .background(Color.white)
+            .clipShape(Circle())
+            .disabled(videoPlayerViewModel.isNextButtonDisabled)
+            .opacity(videoPlayerViewModel.isNextButtonDisabled ? 0.2 : 1.0)
         }
     }
 }
