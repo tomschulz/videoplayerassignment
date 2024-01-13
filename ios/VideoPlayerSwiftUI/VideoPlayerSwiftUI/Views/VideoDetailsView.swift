@@ -21,7 +21,7 @@ struct VideoDetailsView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 10.0) {
                     Text(currentVideo.title)
-                        .font(.title)
+                        .font(.headline)
                     Text(currentVideo.author.name)
                         .font(.subheadline)
 

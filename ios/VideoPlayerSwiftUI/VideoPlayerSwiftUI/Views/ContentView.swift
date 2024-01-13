@@ -46,6 +46,9 @@ struct ContentView: View {
         .onAppear {
             videoPlayerViewModel.fetchData()
         }
+        .alert(videoPlayerViewModel.errorMessage, isPresented: $videoPlayerViewModel.showErrorAlert) {
+                    Button("OK", role: .cancel) { }
+        }
     }
 }
 
