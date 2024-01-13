@@ -5,4 +5,6 @@ This application loads a playlist of video streams from the server, and then dis
 
 I chose to implement the project using SwiftUI.
 
+Please change the server url in VideoPlayerViewModel to the address where the server is running.
+
 

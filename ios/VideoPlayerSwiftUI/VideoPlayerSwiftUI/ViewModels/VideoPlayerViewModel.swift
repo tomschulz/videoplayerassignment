@@ -26,10 +26,15 @@ class VideoPlayerViewModel: ObservableObject {
     private var videos = [VideoModel]()
     private var currentVideoIndex = 0
     
-    let videosURL = URL(string:"http://localhost:4000/videos")! // Force unwrapping here because I want to know right away if I have the wrong URL.
+    let videosURL = URL(string:"http://192.168.1.239:4000/videos")! // Force unwrapping here because I want to know right away if I have the wrong URL.
     
     init() {
-        // do any necessary setup such as audiosession
+        do {
+            try AVAudioSession.sharedInstance().setCategory(.playback)
+            try AVAudioSession.sharedInstance().setActive(true)
+        } catch {
+            print("Failed to set audio session category. \(error)")
+        }
     }
     
     func fetchData() {
