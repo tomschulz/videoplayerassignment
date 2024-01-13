@@ -1,10 +1,20 @@
 //  VideoDetailsView.swift Created by Tom on 2024-01-12.
 import SwiftUI
+import MarkdownKit
 
 struct VideoDetailsView: View {
     
     @EnvironmentObject var videoPlayerViewModel: VideoPlayerViewModel
 
+    func getMarkdownStringForDescription() -> AttributedString {
+        let markdownParser = MarkdownParser()
+        if let markdown = videoPlayerViewModel.getCurrentVideoModel()?.description {
+            return  AttributedString(markdownParser.parse(markdown))
+        } else {
+            return AttributedString(markdownParser.parse(""))
+        }
+    }
+    
     var body: some View {
         
         if let currentVideo = videoPlayerViewModel.getCurrentVideoModel() {
@@ -15,11 +25,8 @@ struct VideoDetailsView: View {
                     Text(currentVideo.author.name)
                         .font(.subheadline)
 
-                    if let attributedString = try? AttributedString(markdown: currentVideo.description) {
-                        Text(attributedString)
-                    } else {
-                        Text(currentVideo.description)
-                    }
+                    Text(getMarkdownStringForDescription())
+    
                 }
             }
         } else {
